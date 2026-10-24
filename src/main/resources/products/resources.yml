@@ -1,0 +1,34 @@
+schema-version: 1
+# 可按主题拆分多个文件；products/ 内递归加载 .yml 与 .yaml。
+# 同一材质只需一个规则；允许元数据后，相同完整数据才会合并。
+# name 为菜单中文名称；旧配置缺省时，默认三种物品按材质补用此处名称。
+# 扩展其他物品时请配置 name，自定义物品优先显示物品自带名称。
+# 所有价格单位为 Vault 金币，且必须是 config.yml 最小单位的整数倍。
+products:
+  cobblestone:
+    name: '<#88CCFF>圆石'
+    material: 'COBBLESTONE'
+    category: '建筑材料'
+    reference-price: 1
+    min-price: 0.2
+    max-price: 5
+    recycle-price: 0.1
+    allow-metadata: false
+  oak_log:
+    name: '<#88CCFF>橡木原木'
+    material: 'OAK_LOG'
+    category: '建筑材料'
+    reference-price: 4
+    min-price: 1
+    max-price: 20
+    recycle-price: 0.5
+    allow-metadata: false
+  iron_ingot:
+    name: '<#88CCFF>铁锭'
+    material: 'IRON_INGOT'
+    category: '矿物材料'
+    reference-price: 10
+    min-price: 3
+    max-price: 50
+    recycle-price: 2
+    allow-metadata: false

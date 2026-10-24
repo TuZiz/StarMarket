@@ -1,0 +1,9 @@
+schema-version: 2
+# 上架时按挂牌总额立即扣税，范围0至小于1；撤单/到期不退税
+listing-tax-rate: 0.03
+# 成交和领取时不重复收费，系统回收不扣税
+# 每玩家未售完订单数、托管物品总数量上限
+order-limit: 20
+stock-limit: 100000
+# 上架有效期，单位小时
+listing-hours: 168

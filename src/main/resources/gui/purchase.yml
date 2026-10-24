@@ -1,0 +1,45 @@
+schema-version: 1
+title: '<#55AAFF>✦ <#88CCFF>确认购买 <#667788>· <#AABBDD>{name}'
+
+shape:
+  - '####I####'
+  - '###Y#R###'
+  - '#########'
+
+elements:
+  '#':
+    material: 'BLACK_STAINED_GLASS_PANE'
+    name: ''
+
+  'I':
+    material: 'PAPER'
+    name: '<#88CCFF>✦ {name} <#667788>× <#77DD99>{quantity}'
+    lore:
+      - '<#445566>⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+      - '<#667788>├ <#AABBDD>平均单价: <#FFCC66>{average}'
+      - '<#667788>└ <#AABBDD>最终支付: <#77DD99>{total} 金币'
+      - ''
+      - '<#FFCC66>❖ 报价 15 秒内有效 <#667788>(每行代表一个价格档位)'
+
+  'Y':
+    material: 'LIME_CONCRETE'
+    name: '<#77DD99>✦ 确认支付'
+    lore:
+      - ''
+      - '<#AABBDD>核对订单无误后完成交易'
+      - '<#FFCC66>物品自动进入背包，放不下的部分掉在脚下'
+      - ''
+      - '<#77DD99>▸ 点击立即支付'
+
+  'R':
+    material: 'RED_CONCRETE'
+    name: '<#FF7777>❖ 取消'
+    lore:
+      - ''
+      - '<#AABBDD>放弃本次交易并返回上一级'
+      - ''
+      - '<#FF7777>▸ 点击取消购买'
+
+row:
+  material: 'PAPER'
+  name: '<#667788>▪ <#AABBDD>单价 <#FFCC66>{price} <#667788>× <#77DD99>{quantity}'

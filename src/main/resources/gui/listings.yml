@@ -1,0 +1,48 @@
+schema-version: 1
+title: '<#55AAFF>✦ <#88CCFF>我的上架订单'
+
+shape:
+  - '#########'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - 'P###R###N'
+
+elements:
+  '#':
+    material: 'BLACK_STAINED_GLASS_PANE'
+    name: ''
+
+  'P':
+    material: 'SPECTRAL_ARROW'
+    name: '<#88CCFF>« 上一页'
+    lore:
+      - '<#667788>查看上一页订单列表'
+
+  'R':
+    material: 'REDSTONE'
+    name: '<#FF7777>❖ 返回'
+    lore:
+      - ''
+      - '<#AABBDD>返回星辰交易所主页'
+      - ''
+      - '<#FFCC66>▸ 点击返回'
+
+  'N':
+    material: 'SPECTRAL_ARROW'
+    name: '<#88CCFF>下一页 »'
+    lore:
+      - '<#667788>查看下一页订单列表'
+
+row:
+  material: 'CHEST'
+  name: '<#88CCFF>✦ {name}'
+  lore:
+    - '<#445566>⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+    - '<#667788>├ <#AABBDD>订单编号: <#88CCFF>#{order}'
+    - '<#667788>├ <#AABBDD>在售状态: <#77DD99>剩余 {quantity} <#667788>· <#AABBDD>单价 <#FFCC66>{price}'
+    - '<#667788>├ <#AABBDD>销售收益: <#77DD99>已售 {sold} <#667788>· <#AABBDD>净收入 <#77DD99>{income}'
+    - '<#667788>└ <#AABBDD>有效期限: <#FFCC66>剩余约 {hours} 小时'
+    - ''
+    - '<#FF7777>▸ 点击撤单 <#667788>(未售物品自动返还，背包满则掉脚下)'

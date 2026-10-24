@@ -1,0 +1,25 @@
+schema-version: 1
+title: '<#88CCFF>商品分类'
+shape:
+  - '#########'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - '#########'
+  - '#P##R##N#'
+elements:
+  '#':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  'R':
+    material: 'ARROW'
+    name: '<#88CCFF>返回'
+  'P':
+    material: 'ARROW'
+    name: '<#88CCFF>上一页'
+  'N':
+    material: 'ARROW'
+    name: '<#88CCFF>下一页'
+row:
+  material: 'BOOKSHELF'
+  name: '<#88CCFF>{name}'

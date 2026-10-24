@@ -1,0 +1,29 @@
+# Build products and local dependencies
+/target/
+/libs/
+*.jar
+
+# IDE and machine-specific files
+/.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+
+# Local server data, recovery snapshots and retired UI experiments
+/backups/
+/design/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.log
+
+# One-off source generators and local deployment scripts
+/*.py
+/tools/*
+!/tools/RuntimeProbe.java
+!/tools/AutomaticDeliveryProbe.java
+!/tools/ListingRefreshProbe.java

@@ -1,0 +1,28 @@
+schema-version: 1
+title: '<#55AAFF>✦ <#88CCFF>最近交易记录'
+
+shape:
+  - '#########'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - '####R####'
+
+elements:
+  '#':
+    material: 'BLACK_STAINED_GLASS_PANE'
+    name: ''
+
+  'R':
+    material: 'REDSTONE'
+    name: '<#FF7777>❖ 返回'
+    lore:
+      - ''
+      - '<#AABBDD>返回星辰交易所主页'
+      - ''
+      - '<#FFCC66>▸ 点击返回'
+
+row:
+  material: 'MAP'
+  name: '<#55AAFF>✦ <#88CCFF>{record}'

@@ -1,0 +1,31 @@
+schema-version: 1
+title: '<#55AAFF>✦ <#88CCFF>出售物品 <#667788>· <#AABBDD>点击背包中的物品'
+
+shape:
+  - '####I####'
+  - '#       #'
+  - '####R####'
+
+elements:
+  '#':
+    material: 'BLACK_STAINED_GLASS_PANE'
+    name: ''
+
+  'I':
+    material: 'CHEST'
+    name: '<#77DD99>✦ 点击背包中的物品'
+    lore:
+      - '<#445566>⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+      - '<#667788>├ <#AABBDD>出售规则: <#88CCFF>默认出售点击格子的整叠物品'
+      - '<#667788>└ <#AABBDD>定价方式: <#FFCC66>仅需设置单个物品售价'
+      - ''
+      - '<#FFCC66>❖ 此时不会扣除任何物品'
+
+  'R':
+    material: 'REDSTONE'
+    name: '<#FF7777>❖ 返回市场'
+    lore:
+      - ''
+      - '<#AABBDD>放弃上架并返回星辰交易所'
+      - ''
+      - '<#FFCC66>▸ 点击返回'

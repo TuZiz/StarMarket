@@ -1,0 +1,81 @@
+schema-version: 1
+title: '<#55AAFF>✦ <#88CCFF>星辰交易所 <#667788>· <#AABBDD>第 {page} 页'
+
+shape:
+  - 'T#M###F#H'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - '#       #'
+  - 'P#S#####N'
+
+elements:
+  '#':
+    material: 'BLACK_STAINED_GLASS_PANE'
+    name: ''
+
+  'S':
+    material: 'EMERALD'
+    name: '<#77DD99>✦ 出售物品'
+    lore:
+      - ''
+      - '<#AABBDD>将背包中的物品上架至星辰交易所'
+      - ''
+      - '<#77DD99>▸ 点击后从背包选择物品'
+
+  'M':
+    material: 'ENDER_CHEST'
+    name: '<#88CCFF>❖ 我的上架'
+    lore:
+      - ''
+      - '<#AABBDD>查看或管理您正在出售的物品'
+      - ''
+      - '<#FFCC66>▸ 点击管理商品'
+
+  'H':
+    material: 'KNOWLEDGE_BOOK'
+    name: '<#88CCFF>❖ 交易记录'
+    lore:
+      - ''
+      - '<#AABBDD>查阅您近期的买卖明细与账单'
+      - ''
+      - '<#FFCC66>▸ 点击查看记录'
+
+  'F':
+    material: 'SPYGLASS'
+    name: '<#88CCFF>❖ 搜索'
+    lore:
+      - ''
+      - '<#AABBDD>通过关键词快速检索目标物品'
+      - ''
+      - '<#FFCC66>▸ 点击输入关键词'
+
+  'T':
+    material: 'BOOKSHELF'
+    name: '<#88CCFF>❖ 分类'
+    lore:
+      - ''
+      - '<#AABBDD>按类别筛选交易所中的商品'
+      - ''
+      - '<#FFCC66>▸ 点击切换分类'
+
+  'P':
+    material: 'SPECTRAL_ARROW'
+    name: '<#88CCFF>« 上一页'
+    lore:
+      - '<#667788>返回上一页商品列表'
+
+  'N':
+    material: 'SPECTRAL_ARROW'
+    name: '<#88CCFF>下一页 »'
+    lore:
+      - '<#667788>前往下一页商品列表'
+
+row:
+  name: '<#88CCFF>✦ {name}'
+  lore:
+    - '<#445566>⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯'
+    - '<#667788>├ <#AABBDD>最低单价: <#FFCC66>{price} 金币'
+    - '<#667788>└ <#AABBDD>可购买库存: <#77DD99>{stock}'
+    - ''
+    - '<#77DD99>▸ 点击选择购买数量'

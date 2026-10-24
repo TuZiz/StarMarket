@@ -1,0 +1,3 @@
+schema-version: 1
+# 金币最小单位；迁移已有数据库时禁止更改
+money-unit: 0.01

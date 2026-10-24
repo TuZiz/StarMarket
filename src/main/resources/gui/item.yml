@@ -1,0 +1,35 @@
+schema-version: 1
+title: '<#88CCFF>{name} · 现货购买'
+shape:
+  - '#########'
+  - '#   I   #'
+  - '# A B C #'
+  - '# D Q   #'
+  - '####R####'
+elements:
+  '#':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  'I':
+    material: 'PAPER'
+    name: '<#88CCFF>最低单价 {price} · 库存 {stock}'
+  'A':
+    material: 'GOLD_NUGGET'
+    name: '<#88CCFF>购买 1 个'
+  'B':
+    material: 'GOLD_NUGGET'
+    name: '<#88CCFF>购买 16 个'
+  'C':
+    material: 'GOLD_INGOT'
+    name: '<#88CCFF>购买 64 个'
+  'D':
+    material: 'CHEST'
+    name: '<#88CCFF>购买全部现货'
+  'Q':
+    material: 'OAK_SIGN'
+    name: '<#88CCFF>输入数量'
+  'R':
+    material: 'ARROW'
+    name: '<#88CCFF>返回'
+row:
+  name: '<#88CCFF>{name}'

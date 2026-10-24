@@ -1,0 +1,14 @@
+name: 'StarMarket'
+version: '1.3.2'
+main: 'cn.starmarket.StarMarket'
+api-version: '26.3'
+depend:
+  - Vault
+commands:
+  market:
+    description: '打开星海交易所'
+permissions:
+  starmarket.use:
+    default: true
+  starmarket.admin:
+    default: op
