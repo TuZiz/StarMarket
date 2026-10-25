@@ -20,13 +20,13 @@ public class RuntimeProbe extends JavaPlugin {
  public void onEnable(){app=(StarMarket)getServer().getPluginManager().getPlugin("StarMarket");getServer().getScheduler().runTaskTimer(this,task->{if(!app.getReady())return;task.cancel();prepare();},20,20);}
  private void prepare(){java.util.concurrent.CompletableFuture.runAsync(()->{try{
   Path path=app.getDataFolder().toPath().resolve("products/equipment/swords.yml");Files.createDirectories(path.getParent());Files.writeString(path,"schema-version: 1\nproducts:\n  sword:\n    name: '<#88CCFF>测试装备'\n    material: 'DIAMOND_SWORD'\n    category: '装备'\n    reference-price: 100\n    min-price: 1\n    max-price: 10000\n    recycle-price: 0\n    recycle-enabled: false\n    allow-metadata: true\n");
- }catch(Exception e){throw new RuntimeException(e);}}).thenCompose(x->app.reload()).whenComplete((x,error)->getServer().getScheduler().runTask(this,()->{try{if(error!=null)throw new RuntimeException(error);runChecks();new ListingRefreshProbe(app,this,this::verify).run().thenCompose(v->app.main(()->new AutomaticDeliveryProbe(app,this,this::verify).run()).thenCompose(f->f)).whenComplete((v,e)->getServer().getScheduler().runTask(this,()->finish(e)));}catch(Throwable e){finish(e);}}));}
+ }catch(Exception e){throw new RuntimeException(e);}}).thenCompose(x->app.reload()).whenComplete((x,error)->getServer().getScheduler().runTask(this,()->{try{if(error!=null)throw new RuntimeException(error);runChecks();new ListingRefreshProbe(app,this,this::verify).run().thenCompose(v->app.main(()->new HandListingProbe(app,this,this::verify).run()).thenCompose(f->f)).thenCompose(v->app.main(()->new AutomaticDeliveryProbe(app,this,this::verify).run()).thenCompose(f->f)).whenComplete((v,e)->getServer().getScheduler().runTask(this,()->finish(e)));}catch(Throwable e){finish(e);}}));}
  private void runChecks(){
   var codec=app.getTransactions().getCodec();
   verify(app.getSettings().getFee().signum()==0,"no settlement tax configured");
   verify(app.getSettings().getListingTaxRate().compareTo(new java.math.BigDecimal("0.03"))==0,"upfront listing tax rate migrated to 3 percent");
   verify(app.getSettings().getTrading().getInt("schema-version")==2,"trading configuration migrated to schema2");
-  verify(app.getSettings().getLang().getInt("schema-version")==2,"automatic delivery language migrated to schema2");
+  verify(app.getSettings().getLang().getInt("schema-version")==3,"open listing language migrated to schema3");
   verify(Files.exists(app.getDataFolder().toPath().resolve("lang/zh_CN.yml.v1-auto-delivery.bak")),"automatic delivery language original preserved in backup");
   verify(Files.exists(app.getDataFolder().toPath().resolve("products/cobblestone.yml")),"legacy products migrated");
   verify(Files.exists(app.getDataFolder().toPath().resolve("products.yml.pre-catalog.bak")),"legacy configuration backup exists");
@@ -43,7 +43,7 @@ public class RuntimeProbe extends JavaPlugin {
   selectedStorage[3]=new ItemStack(Material.COBBLESTONE,12);reject(()->codec.removeSlot(selectedPlayer,selectedIdentity,32,3),"changed selected quantity rejected");verify(selectedStorage[3].getAmount()==12&&selectedStorage[4].getAmount()==64,"rejection never combines inventory stacks");
   selectedStorage[3]=new ItemStack(Material.DIRT,32);reject(()->codec.removeSlot(selectedPlayer,selectedIdentity,32,3),"changed selected identity rejected");
   selectedStorage[3]=null;selectedStorage[5]=new ItemStack(Material.COBBLESTONE,32);reject(()->codec.removeSlot(selectedPlayer,selectedIdentity,32,3),"moved selected stack rejected");verify(selectedStorage[5].getAmount()==32,"moved item never silently consumed");
-  verify(app.getGui().getAssets().getConfigs().get("stack-sale").getConfigurationSection("elements").getKeys(false).equals(Set.of("#","I","P","Y","S","R")),"sale GUI has no quantity controls");
+  verify(app.getGui().getAssets().getConfigs().get("recycle").getConfigurationSection("elements").getKeys(false).equals(Set.of("#","I","S","R")),"recycling GUI has no price or listing controls");
   var a=codec.identify(new ItemStack(Material.COBBLESTONE,64));var b=codec.identify(new ItemStack(Material.COBBLESTONE,1));
   verify(a.equals(b),"normal stacks merge regardless of amount");
   verify(codec.label(a).equals("圆石"),"missing legacy cobblestone name falls back to Chinese resource name");
@@ -62,7 +62,9 @@ public class RuntimeProbe extends JavaPlugin {
   ItemStack other=sword.clone();var changed=other.getItemMeta();changed.getPersistentDataContainer().set(new NamespacedKey(this,"item"),PersistentDataType.STRING,"variant-B");other.setItemMeta(changed);
   verify(!codec.identify(other).getKey().equals(identity.getKey()),"different custom data never merged");
   verify(!codec.recyclable(identity),"RPG equipment cannot system recycle");
-  ItemStack forged=new ItemStack(Material.COBBLESTONE);var renamed=forged.getItemMeta();renamed.displayName(Component.text("Fake"));forged.setItemMeta(renamed);reject(()->codec.identify(forged),"modified ordinary resource rejected");
+  ItemStack forged=new ItemStack(Material.COBBLESTONE);var renamed=forged.getItemMeta();renamed.displayName(Component.text("Fake"));forged.setItemMeta(renamed);verify(!codec.identify(forged).getKey().equals("cobblestone")&&!codec.recyclable(codec.identify(forged)),"renamed resource accepted as distinct listing but cannot impersonate recyclable item");
+  var dirt=codec.identify(new ItemStack(Material.DIRT,16));verify(dirt.getProduct().equals("minecraft:dirt")&&codec.label(dirt).equals("泥土")&&!codec.recyclable(dirt),"unconfigured item accepted with Chinese name and no system recycling");
+  verify(app.getSettings().getProducts().containsKey("minecraft:cobblestone"),"canonical material alias survives adding recycling rules");
   verify(Text.INSTANCE.render("<#88CCFF>A<italic>B</italic>").children().stream().allMatch(c->c.decoration(TextDecoration.ITALIC)==TextDecoration.State.FALSE),"rendered children non italic");
   var translated=(net.kyori.adventure.text.TranslatableComponent)Text.INSTANCE.plain(Component.translatable("test",Component.text("Arg").decorate(TextDecoration.ITALIC)));
   verify(((Component)translated.arguments().getFirst().value()).decoration(TextDecoration.ITALIC)==TextDecoration.State.FALSE,"translation arguments non italic");
@@ -75,18 +77,18 @@ public class RuntimeProbe extends JavaPlugin {
   app.getVault().check(uuid,100,true);verify(app.getVault().transfer(uuid,100,true),"Vault withdrawal success result");
   mode="poor";int prior=calls;reject(()->app.getVault().check(uuid,100,true),"balance failure before economic effect");verify(calls==prior,"balance failure made no withdrawal call");
   mode="reject";verify(!app.getVault().transfer(uuid,100,false),"Vault explicit failure preserved");mode="throw";reject(()->app.getVault().transfer(uuid,100,true),"Vault uncertain exception not swallowed");getServer().getServicesManager().unregisterAll(this);
-  verify(app.getGui().getAssets().getConfigs().size()==8&&!app.getGui().getAssets().getConfigs().containsKey("warehouse"),"eight GUI shapes loaded without warehouse");
+  verify(app.getGui().getAssets().getConfigs().size()==7&&!app.getGui().getAssets().getConfigs().containsKey("select-item")&&!app.getGui().getAssets().getConfigs().containsKey("stack-sale")&&!app.getGui().getAssets().getConfigs().containsKey("warehouse"),"seven GUI shapes loaded without obsolete selector or warehouse");
   var gui=app.getGui();var guiId=UUID.randomUUID();var opened=new org.bukkit.inventory.Inventory[1];
   var viewer=(org.bukkit.entity.Player)Proxy.newProxyInstance(getClassLoader(),new Class[]{org.bukkit.entity.Player.class},(proxy,method,args)->switch(method.getName()){
    case "getUniqueId"->guiId;case "getInventory"->inventory;case "isOnline","hasPermission"->true;
    case "openInventory"->{opened[0]=(org.bukkit.inventory.Inventory)args[0];yield null;}
    default->null;
   });
-  selectedStorage[3]=new ItemStack(Material.COBBLESTONE,32);gui.getSale().choose(viewer,selectedStorage[3],3);
+  selectedStorage[3]=new ItemStack(Material.COBBLESTONE,32);gui.getRecycle().open(viewer);gui.getRecycle().choose(viewer,selectedStorage[3],3);
   var saleHolder=(cn.starmarket.gui.MarketGui.Screen)opened[0].getHolder();
   verify(opened[0].getItem(4).getType()==Material.COBBLESTONE,"sale preview follows moved I symbol");
   verify(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(opened[0].getItem(4).getItemMeta().displayName()).contains("圆石"),"sale confirmation preview displays Chinese item name");
-  verify(opened[0].getItem(13).getType()==Material.NAME_TAG&&saleHolder.getActions().containsKey(13),"price button survives moved preview");
+  verify(opened[0].getItem(13).getType()==Material.GOLD_INGOT&&saleHolder.getActions().containsKey(13),"system recycling button follows dedicated screen");
   var quote=new Quote(UUID.randomUUID().toString(),guiId.toString(),a.getProduct(),a.getKey(),2,300,List.of(),List.of(new PriceTier(100,1),new PriceTier(200,1)),System.currentTimeMillis()+15000,java.math.BigDecimal.ZERO);
   gui.confirm(viewer,quote,oldLabel,0);var confirmHolder=(cn.starmarket.gui.MarketGui.Screen)opened[0].getHolder();
   verify(net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(opened[0].getItem(4).getItemMeta().displayName()).contains("圆石"),"purchase summary translates historical English labels");

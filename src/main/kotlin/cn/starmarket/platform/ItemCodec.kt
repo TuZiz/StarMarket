@@ -15,7 +15,6 @@ class ItemCodec(private val settings:()->Settings) {
  fun identify(stack:ItemStack):ItemIdentity {
   if(stack.type.isAir||stack.amount !in 1..stack.maxStackSize)throw MarketRejected("unsupported")
   val p=product(stack);val clean=stack.isSimilar(ItemStack(stack.type))
-  if(!clean&&!p.allowMetadata)throw MarketRejected("metadata")
   val one=stack.clone().also{it.amount=1};val data=one.serializeAsBytes()
   val hash=MessageDigest.getInstance("SHA-256").digest(data).joinToString(""){"%02x".format(it)}
   val name=one.itemMeta?.let{it.displayName()?:it.itemName()}?.let{PlainTextComponentSerializer.plainText().serialize(it)}?:MiniMessage.miniMessage().stripTags(p.name)
@@ -59,5 +58,8 @@ class ItemCodec(private val settings:()->Settings) {
   }
   return dropped
  }
- fun recyclable(item:ItemIdentity)=decode(item).isSimilar(ItemStack(Material.valueOf(settings().products.getValue(item.product).material)))&&settings().products.getValue(item.product).recycle
+ fun recyclable(item:ItemIdentity):Boolean {
+  val product=settings().products.getValue(item.product)
+  return product.recycle&&product.salvage>0&&decode(item).isSimilar(ItemStack(Material.valueOf(product.material)))
+ }
 }

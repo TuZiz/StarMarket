@@ -19,9 +19,10 @@ class MarketGui(val app:StarMarket):Listener {
   lateinit var inv:Inventory;val actions=hashMapOf<Int,()->Unit>();override fun getInventory()=inv
  }
  val assets=MenuAssets(app)
- val sale=SaleFlow(this)
+ val sale=ChatListingFlow(this)
+ val recycle=RecyclingFlow(this)
  private val sessions=hashMapOf<UUID,UUID>()
- private data class Input(val token:UUID,val consume:(String)->Unit)
+ private data class Input(val token:UUID,val consume:(String)->Unit,val pending:java.util.concurrent.atomic.AtomicBoolean=java.util.concurrent.atomic.AtomicBoolean())
  private val inputs=ConcurrentHashMap<UUID,Input>()
  fun token(p:Player)=sessions.getOrPut(p.uniqueId){UUID.randomUUID()}
  fun current(p:Player,token:UUID)=p.isOnline&&sessions[p.uniqueId]==token&&p.hasPermission("starmarket.use")
@@ -29,18 +30,25 @@ class MarketGui(val app:StarMarket):Listener {
  fun open(p:Player,name:String,values:Map<String,String> = emptyMap(),select:Boolean=false,action:(Char)->(()->Unit)?):Screen {
   val c=assets.configs.getValue(name);val h=Screen(request(p),name,assets.layouts.getValue(name),select)
   h.inv=Bukkit.createInventory(h,c.getStringList("shape").size*9,Text.render(assets.format(c.getString("title")!!,values)))
-  c.getStringList("shape").joinToString("").forEachIndexed{i,ch->if(ch!=' '){h.inv.setItem(i,assets.icon(name,"elements.$ch",values));action(ch)?.let{h.actions[i]=it}}}
+  refresh(h,values,action=action)
   p.openInventory(h.inv);return h
+ }
+ /** Main thread only; refreshes slots without changing inventory, title or token. */
+ fun refresh(h:Screen,values:Map<String,String>,visible:(Char)->Boolean={true},action:(Char)->(()->Unit)?){
+  h.actions.clear();h.inv.clear()
+  assets.configs.getValue(h.menu).getStringList("shape").joinToString("").forEachIndexed{i,ch->
+   if(ch!=' '&&visible(ch)){h.inv.setItem(i,assets.icon(h.menu,"elements.$ch",values));action(ch)?.let{h.actions[i]=it}}
+  }
  }
  fun content(h:Screen,index:Int,item:org.bukkit.inventory.ItemStack,action:()->Unit){val slot=h.layout.contentSlots.getOrNull(index)?:return;h.inv.setItem(slot,item);h.actions[slot]=action}
  fun preview(h:Screen,item:org.bukkit.inventory.ItemStack){h.layout.slots('I').forEach{h.inv.setItem(it,item)}}
- fun home(p:Player,search:String="",category:String="",page:Int=0){val id=request(p)
+ fun home(p:Player,search:String="",category:String="",page:Int=0){recycle.clear(p.uniqueId);val id=request(p)
   app.db{it.offers(p.uniqueId.toString(),search,category)}.whenComplete{rows,error->app.main{
    if(!current(p,id))return@main
    if(error!=null){app.transactions.failure(p,error);return@main}
    val size=assets.pageSize("browse");val selected=assets.layouts.getValue("browse").page(page,rows.size)
    val h=open(p,"browse",mapOf("page" to (selected+1).toString())){ch->when(ch){
-    'S'->({sale.select(p)});'M'->({mine(p)});'H'->({history(p)});'F'->({prompt(p,"search-input"){home(p,it)}});'T'->({categories(p)});'P'->({home(p,search,category,selected-1)});'N'->({home(p,search,category,selected+1)});else->null}}
+    'S'->({sale.start(p)});'B'->({recycle.open(p)});'M'->({mine(p)});'H'->({history(p)});'F'->({prompt(p,"search-input"){home(p,it)}});'T'->({categories(p)});'P'->({home(p,search,category,selected-1)});'N'->({home(p,search,category,selected+1)});else->null}}
    if(rows.isEmpty())app.message(p,"market-empty")
    rows.drop(selected*size).take(size).forEachIndexed{i,offer->content(h,i,assets.icon("browse","row",mapOf("name" to app.transactions.codec.label(offer.item),"price" to app.settings.money(offer.minimum),"stock" to offer.stock.toString()),offer.item)){detail(p,offer.item)}}
   }}
@@ -100,15 +108,23 @@ class MarketGui(val app:StarMarket):Listener {
   names.drop(selected*size).take(size).forEachIndexed{i,name->content(h,i,assets.icon("categories","row",mapOf("name" to name))){home(p,category=name)}}
  }
  fun history(p:Player){val id=request(p);app.db{it.db.query("SELECT kind,quantity,state FROM operations WHERE owner=? ORDER BY created DESC LIMIT 21",p.uniqueId.toString()){r->r.getString(1)+" / "+r.getLong(2)+" / "+r.getString(3)}}.whenComplete{rows,error->app.main{if(!current(p,id))return@main;if(error!=null){app.transactions.failure(p,error);return@main};val h=open(p,"records"){if(it=='R')({home(p)})else null};rows.forEachIndexed{i,row->content(h,i,assets.icon("records","row",mapOf("record" to row))) {}}}}}
- fun prompt(p:Player,key:String,consume:(String)->Unit){p.closeInventory();val id=request(p);inputs[p.uniqueId]=Input(id,consume);app.message(p,key)}
+ fun prompt(p:Player,key:String,values:Map<String,String> = emptyMap(),consume:(String)->Unit){
+  p.closeInventory();val id=request(p);val once=java.util.concurrent.atomic.AtomicBoolean()
+  inputs[p.uniqueId]=Input(id,{text->if(!current(p,id)||!once.compareAndSet(false,true))throw MarketRejected("session");consume(text)})
+  app.message(p,key,*values.map{it.key to it.value}.toTypedArray())
+ }
  fun number(p:Player,text:String,consume:(Long)->Unit){val n=text.toLongOrNull();if(n==null||n<=0)app.message(p,"reject-quantity")else consume(n)}
- @EventHandler(priority=EventPriority.LOWEST) fun chat(e:AsyncChatEvent){val input=inputs.remove(e.player.uniqueId)?:return;e.isCancelled=true;val text=PlainTextComponentSerializer.plainText().serialize(e.message()).trim();app.main{if(current(e.player,input.token)){if(text.equals("cancel",true)){home(e.player)}else try{input.consume(text)}catch(error:Throwable){app.transactions.failure(e.player,error)}}}}
+ @EventHandler(priority=EventPriority.LOWEST) fun chat(e:AsyncChatEvent){val input=inputs[e.player.uniqueId]?:return;e.isCancelled=true
+  if(!input.pending.compareAndSet(false,true))return
+  val text=PlainTextComponentSerializer.plainText().serialize(e.message()).trim()
+  app.main{inputs.remove(e.player.uniqueId,input);if(current(e.player,input.token)){if(text.equals("cancel",true)){home(e.player)}else try{input.consume(text)}catch(error:Throwable){app.transactions.failure(e.player,error)}}}
+ }
  @EventHandler fun click(e:InventoryClickEvent){val h=e.view.topInventory.holder as? Screen?:return;e.isCancelled=true;val p=e.whoClicked as? Player?:return;if(!current(p,h.token)||app.transactions.isBusy(p))return
-  if(e.clickedInventory==p.inventory&&h.select&&e.slot in 0..35){e.currentItem?.let{stack->val selected=stack.clone();val slot=e.slot;app.main{if(current(p,h.token))sale.choose(p,selected,slot)}};return}
+  if(e.clickedInventory==p.inventory&&h.select&&e.slot in 0..35){e.currentItem?.let{stack->val selected=stack.clone();val slot=e.slot;app.main{if(current(p,h.token))recycle.choose(p,selected,slot)}};return}
   if(e.rawSlot in 0 until h.inv.size){val action=h.actions[e.rawSlot]?:return;app.main{if(current(p,h.token)&&!app.transactions.isBusy(p))try{action()}catch(error:Throwable){app.transactions.failure(p,error)}}}
  }
  @EventHandler fun drag(e:InventoryDragEvent){if(e.view.topInventory.holder is Screen)e.isCancelled=true}
- @EventHandler fun close(e:InventoryCloseEvent){val h=e.inventory.holder as? Screen?:return;if(sessions[e.player.uniqueId]==h.token){sessions.remove(e.player.uniqueId);app.transactions.quotes.remove(e.player.uniqueId)}}
- @EventHandler fun quit(e:PlayerQuitEvent){sessions.remove(e.player.uniqueId);inputs.remove(e.player.uniqueId);sale.clear(e.player.uniqueId);app.transactions.quotes.remove(e.player.uniqueId)}
- fun clear(){sessions.clear();inputs.clear();sale.clearAll()}
+ @EventHandler fun close(e:InventoryCloseEvent){val h=e.inventory.holder as? Screen?:return;recycle.closed(e.player.uniqueId,h);if(sessions[e.player.uniqueId]==h.token){sessions.remove(e.player.uniqueId);app.transactions.quotes.remove(e.player.uniqueId)}}
+ @EventHandler fun quit(e:PlayerQuitEvent){sessions.remove(e.player.uniqueId);inputs.remove(e.player.uniqueId);recycle.clear(e.player.uniqueId);app.transactions.quotes.remove(e.player.uniqueId)}
+ fun clear(){sessions.clear();inputs.clear();recycle.clearAll()}
 }

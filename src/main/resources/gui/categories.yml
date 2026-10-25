@@ -1,25 +1,35 @@
+# ==========================================================================
+#                       商城系统 · 商品分类菜单配置
+# --------------------------------------------------------------------------
+# 视觉规范：延续全服「星辰冰蓝」统一色系，基于 MiniMessage 渲染
+# ==========================================================================
+
 schema-version: 1
-title: '<#88CCFF>商品分类'
+
+title: '<#89F7FE>✦ <gradient:#89F7FE:#C2E9FB><bold>商 品 分 类</bold></gradient> <#89F7FE>✦'
+
 shape:
   - '#########'
   - '#       #'
   - '#       #'
   - '#       #'
-  - '#########'
-  - '#P##R##N#'
+  - '#       #'
+  - 'P###R###N'
+
 elements:
   '#':
     material: 'GRAY_STAINED_GLASS_PANE'
-    name: ''
+    name: ' '
   'R':
     material: 'ARROW'
-    name: '<#88CCFF>返回'
+    name: '<!italic><#FFB75E>↩ <bold>返回上一级</bold>'
   'P':
     material: 'ARROW'
-    name: '<#88CCFF>上一页'
+    name: '<!italic><#89F7FE>◀ <#E0F7FA>上一页'
   'N':
     material: 'ARROW'
-    name: '<#88CCFF>下一页'
+    name: '<!italic><#E0F7FA>下一页 <#89F7FE>▶'
+
 row:
   material: 'BOOKSHELF'
-  name: '<#88CCFF>{name}'
+  name: '<!italic><#89F7FE>✦ <gradient:#89F7FE:#C2E9FB><bold>{name}</bold></gradient>'

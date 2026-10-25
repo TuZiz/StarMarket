@@ -27,3 +27,4 @@ Thumbs.db
 !/tools/RuntimeProbe.java
 !/tools/AutomaticDeliveryProbe.java
 !/tools/ListingRefreshProbe.java
+!/tools/HandListingProbe.java

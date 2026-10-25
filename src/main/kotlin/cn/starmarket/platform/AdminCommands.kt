@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture
 class AdminCommands(private val app:StarMarket) {
  fun execute(sender:CommandSender,args:List<String>){
   if(!sender.hasPermission("starmarket.admin")){app.message(sender,"permission");return}
+  if(args.isEmpty()||args.first() in listOf("help","?")){app.message(sender,"help-admin");return}
   val actor=sender.name
   val actual:CompletableFuture<*> = if(args.firstOrNull() in listOf("reconcile","claim-resolve"))app.db{ex->
    require(args.size>=4){"Expected id, decision and evidence note"}
@@ -14,7 +15,7 @@ class AdminCommands(private val app:StarMarket) {
    ex.db.exec("INSERT INTO audit VALUES(?,?,?)",System.currentTimeMillis(),actor,args.joinToString(" "));"OK"
   }else if(args.firstOrNull()=="reload")app.reload()else app.db{ex->ex.db.transaction{
    val result=when(args.firstOrNull()){
-    "status"->ex.products.values.joinToString("\n"){"${it.id}: reference=${app.settings.money(ex.state(it).price)}, stock=${ex.stock(it)}"}
+    "status"->{val active=ex.db.query("SELECT id FROM markets"){it.getString(1)}.toSet();ex.products.values.filter{it.id in active||it.salvage>0}.joinToString("\n"){"${it.id}: reference=${app.settings.money(ex.state(it).price)}, stock=${ex.stock(it)}"}}
     "orders"->ex.orders(args.getOrNull(1)?:throw MarketRejected("arguments")).joinToString("\n")
     "pause","resume"->{val p=ex.products.getValue(args[1]);ex.state(p);ex.db.exec("UPDATE markets SET paused=? WHERE id=?",if(args[0]=="pause")1 else 0,p.id);"OK"}
     "price","reset"->{val p=ex.products.getValue(args[1]);val value=if(args[0]=="reset")p.base else app.settings.units(args[2]);require(value in p.floor..p.ceiling);ex.save(p,ex.state(p).copy(price=value));"OK"}

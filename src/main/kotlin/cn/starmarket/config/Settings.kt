@@ -11,6 +11,7 @@ class Settings(val plugin:JavaPlugin) {
  val unit=BigDecimal(main.getString("money-unit")!!).also{require(it>BigDecimal.ZERO&&it.scale()<=6){"config.yml money-unit invalid"}}
  val trading:YamlConfiguration
  val products:Map<String,Product>
+ val configuredProducts:Map<String,Product>
  val fee:BigDecimal
  val listingTaxRate:BigDecimal
  val orderLimit:Int
@@ -32,7 +33,8 @@ class Settings(val plugin:JavaPlugin) {
   require(listingTaxRate>=BigDecimal.ZERO&&listingTaxRate<BigDecimal.ONE){"trading.yml listing-tax-rate invalid"}
   orderLimit=trading.getInt("order-limit");stockLimit=trading.getLong("stock-limit")
   val hours=trading.getLong("listing-hours");require(orderLimit in 1..1000&&stockLimit in 1..1000000&&hours in 1..8760){"trading.yml limits/listing-hours invalid"};lifetime=Math.multiplyExact(hours,3600000)
-  products=Catalog.load(plugin,unit)
+  configuredProducts=Catalog.load(plugin,unit)
+  products=OpenListingCatalog.expand(plugin,configuredProducts,unit,net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().stripTags(lang.getString("category-other")!!))
  }
  fun money(n:Long)=unit.multiply(BigDecimal(n)).stripTrailingZeros().toPlainString()
  fun units(text:String):Long=try{BigDecimal(text).divide(unit).longValueExact().also{require(it>=0)}}catch(e:Exception){throw cn.starmarket.domain.MarketRejected("price")}

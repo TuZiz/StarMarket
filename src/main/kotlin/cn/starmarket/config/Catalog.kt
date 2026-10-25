@@ -37,6 +37,6 @@ object Catalog {
     require(!result.containsKey(id)){"${file.path}: duplicate product=$id"};result[id]=p
    }
   }
-  require(result.isNotEmpty()){"products/: no product rules found"};return result
+  return result
  }
 }

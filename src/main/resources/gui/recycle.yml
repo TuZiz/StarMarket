@@ -1,0 +1,33 @@
+schema-version: 1
+title: '<#55AAFF>✦ <#FFCC66>系统回收 <#667788>· <#AABBDD>点击背包选物'
+shape:
+  - '####I####'
+  - '#   S   #'
+  - '####R####'
+elements:
+  '#':
+    material: 'BLACK_STAINED_GLASS_PANE'
+    name: ''
+  'I':
+    material: 'PAPER'
+    name: '<#88CCFF>{name} ×{quantity}'
+    lore:
+      - '<#AABBDD>固定单价：{price} 金币'
+      - '<#77DD99>整叠回收：{total} 金币'
+  'S':
+    material: 'GOLD_INGOT'
+    name: '<#FFCC66>确认系统回收（免税）'
+    lore:
+      - '<#AABBDD>{name} ×{quantity}'
+      - '<#77DD99>立即获得 {total} 金币，不扣税'
+      - '<#FF7777>确认后永久消耗该格整叠物品'
+      - '<#AABBDD>系统回收物品不会进入玩家市场'
+  'R':
+    material: 'REDSTONE'
+    name: '<#FF7777>返回市场'
+empty:
+  material: 'CHEST'
+  name: '<#FFCC66>点击下方背包选择回收物品'
+  lore:
+    - '<#AABBDD>默认回收所选格子的整叠数量'
+    - '<#AABBDD>确认之前不会扣除物品'

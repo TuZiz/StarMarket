@@ -1,4 +1,4 @@
-schema-version: 1
+schema-version: 2
 title: '<#55AAFF>✦ <#88CCFF>星辰交易所 <#667788>· <#AABBDD>第 {page} 页'
 
 shape:
@@ -7,7 +7,7 @@ shape:
   - '#       #'
   - '#       #'
   - '#       #'
-  - 'P#S#####N'
+  - 'P#S#B###N'
 
 elements:
   '#':
@@ -19,9 +19,17 @@ elements:
     name: '<#77DD99>✦ 出售物品'
     lore:
       - ''
-      - '<#AABBDD>将背包中的物品上架至星辰交易所'
+      - '<#AABBDD>关闭菜单后，手持需要上架的整叠物品'
       - ''
-      - '<#77DD99>▸ 点击后从背包选择物品'
+      - '<#77DD99>▸ 点击后在聊天输入单个售价'
+
+  'B':
+    material: 'GOLD_INGOT'
+    name: '<#FFCC66>✦ 系统回收'
+    lore:
+      - '<#AABBDD>按固定保底价出售背包中的整叠物品'
+      - '<#77DD99>立即获得金币，不扣税'
+      - '<#FFCC66>▸ 点击选择需要回收的物品'
 
   'M':
     material: 'ENDER_CHEST'

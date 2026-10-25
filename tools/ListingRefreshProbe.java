@@ -54,9 +54,9 @@ public final class ListingRefreshProbe {
    .thenCompose(v->supply(29)).thenCompose(v->open(1)).thenCompose(v->main(()->{verify.accept(buttons()==1,"last page fixture contains one order");click();}))
    .thenCompose(v->until(()->screen()!=before&&!app.getTransactions().isBusy(player)))
    .thenCompose(v->main(()->verify.accept(buttons()==28,"empty last page automatically clamps to previous page")))
-   .thenCompose(v->main(()->{click();app.getGui().getSale().select(player);}))
+   .thenCompose(v->main(()->{click();app.getGui().getRecycle().open(player);}))
    .thenCompose(v->until(()->!app.getTransactions().isBusy(player)))
-   .thenCompose(v->main(()->verify.accept(screen().getMenu().equals("select-item"),"late cancel callback does not replace newer menu")))
+   .thenCompose(v->main(()->verify.accept(screen().getMenu().equals("recycle"),"late cancel callback does not replace newer menu")))
    .thenCompose(v->open(0)).thenCompose(v->main(()->{
     click();var view=(InventoryView)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{InventoryView.class},(p,m,a)->switch(m.getName()){
      case "getTopInventory"->opened;case "getPlayer"->player;default->null;

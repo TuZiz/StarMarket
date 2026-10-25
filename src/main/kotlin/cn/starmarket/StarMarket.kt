@@ -30,7 +30,7 @@ class StarMarket:JavaPlugin(),MarketAccess {
   settings=Settings(this);vault=VaultGateway(settings.unit);transactions=Transactions(this);gui=MarketGui(this);admin=AdminCommands(this)
   deliveries=AutomaticDeliveries(this);deliveries.start()
   server.pluginManager.registerEvents(gui,this)
-  val legacy=settings.products.values.map{transactions.codec.legacy(it)}
+  val legacy=settings.configuredProducts.values.map{transactions.codec.legacy(it)}
   CompletableFuture.runAsync({
    dataFolder.mkdirs();val database=Database(File(dataFolder,"market.db"))
    val ex=Exchange(database,settings.products,settings.fee,settings.orderLimit,settings.stockLimit,settings.lifetime,settings.listingTaxRate);exchange=ex
@@ -53,25 +53,28 @@ class StarMarket:JavaPlugin(),MarketAccess {
   try{server.scheduler.runTask(this,Runnable{try{if(!isEnabled)throw IllegalStateException("StarMarket disabled");future.complete(work())}catch(e:Throwable){future.completeExceptionally(e)}finally{scheduled.remove(future)}})}catch(e:Throwable){scheduled.remove(future);future.completeExceptionally(e)}
   return future
  }
- fun message(sender:CommandSender,key:String,vararg values:Pair<String,String>){val text=settings.lang.getString(key)?:settings.lang.getString("transaction-uncertain")!!
-  var result=text;values.forEach{(k,v)->result=result.replace("{$k}",net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().escapeTags(v))};sender.sendMessage(Text.render(result))
+ fun message(sender:CommandSender,key:String,vararg values:Pair<String,String>){
+  val texts=if(settings.lang.isList(key))settings.lang.getStringList(key)else listOf(settings.lang.getString(key)?:settings.lang.getString("transaction-uncertain")!!)
+  texts.forEach{text->var result=text;values.forEach{(k,v)->result=result.replace("{$k}",net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().escapeTags(v))};sender.sendMessage(Text.render(result))}
  }
  override fun openMarket(player:Player){if(!ready)message(player,"busy")else if(!player.hasPermission("starmarket.use"))message(player,"permission")else gui.home(player)}
  override fun onCommand(sender:CommandSender,command:Command,label:String,args:Array<out String>):Boolean {
   if(!ready){message(sender,"busy");return true}
   if(args.firstOrNull()=="admin"){admin.execute(sender,args.drop(1));return true}
-  val p=sender as? Player?:return true
+  val p=sender as? Player?:run{message(sender,"help-player");return true}
   if(!p.hasPermission("starmarket.use")){message(p,"permission");return true}
   try{when(args.firstOrNull()){
    null->openMarket(p)
-   "sell","list"->gui.sale.select(p)
+   "sell","list"->gui.sale.start(p)
+   "recycle"->gui.recycle.open(p)
    "search"->gui.home(p,args.drop(1).joinToString(" "))
    "category"->gui.home(p,category=args.drop(1).joinToString(" "))
    "mine"->gui.mine(p)
    "history"->gui.history(p)
    "confirm"->transactions.buy(p)
    "cancel"->transactions.cancel(p,args.getOrNull(1)?:throw MarketRejected("arguments"))
-   else->message(p,"market-help")
+   "help","?"->message(p,"help-player")
+   else->{message(p,"command-unknown");message(p,"help-player")}
   }}catch(error:Throwable){transactions.failure(p,error)};return true
  }
  fun reload():CompletableFuture<*> = db{ex->

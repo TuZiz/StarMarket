@@ -1,12 +1,13 @@
 name: 'StarMarket'
-version: '1.3.2'
+version: '1.3.5'
 main: 'cn.starmarket.StarMarket'
 api-version: '26.3'
 depend:
   - Vault
 commands:
   market:
-    description: '打开星海交易所'
+    description: '玩家物品寄售、现货购买与系统回收；/market help 查看用法'
+    usage: '/market help'
 permissions:
   starmarket.use:
     default: true

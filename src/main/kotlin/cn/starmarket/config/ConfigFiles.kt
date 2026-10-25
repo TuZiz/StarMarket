@@ -19,15 +19,13 @@ object ConfigFiles {
   if(!file.exists())plugin.saveResource(path,false)
   return load(file)
  }
- /** Append missing flat language entries, retaining all existing comments/unknown fields. */
+ /** Migrate language entries, retaining all existing comments/unknown fields. */
  fun language(plugin:JavaPlugin):YamlConfiguration {
   val file=File(plugin.dataFolder,"lang/zh_CN.yml")
   if(!file.exists())plugin.saveResource("lang/zh_CN.yml",false)
   val defaults=plugin.getResource("lang/zh_CN.yml")!!.bufferedReader().use{it.readText()}
   DeliveryLanguageMigration.upgrade(file,defaults)
-  val old=load(file,setOf(2))
-  val lines=defaults.lines().filter{it.isNotBlank()&&!it.startsWith("#")&&!old.contains(it.substringBefore(':'))}
-  if(lines.isNotEmpty())atomic(file,file.readText().trimEnd()+"\n"+lines.joinToString("\n")+"\n")
-  return load(file,setOf(2))
+  MarketLanguageMigration.upgrade(file,defaults)
+  return load(file,setOf(3))
  }
 }
