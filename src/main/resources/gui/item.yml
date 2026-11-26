@@ -1,35 +1,79 @@
 schema-version: 1
-title: '<#88CCFF>{name} · 现货购买'
+title: '<#55AAFF>✦ 星海交易所 <#667788>丨 <#88CCFF>{name} <#AABBDD>· 现货'
+
 shape:
-  - '#########'
-  - '#   I   #'
+  - '####I####'
   - '# A B C #'
-  - '# D Q   #'
+  - '#   Q   #'
   - '####R####'
+
 elements:
   '#':
     material: 'GRAY_STAINED_GLASS_PANE'
-    name: ''
+    name: ' '
+
   'I':
     material: 'PAPER'
-    name: '<#88CCFF>最低单价 {price} · 库存 {stock}'
+    name: '<#55AAFF>📦 <#88CCFF>{name} <#667788>丨 <#AABBDD>现货行情'
+    lore:
+      - '<#446688>──────────────────────'
+      - '<#55AAFF>▸ <#AABBDD>最低单价：<#FFCC66>{price} 金币'
+      - '<#55AAFF>▸ <#AABBDD>在售库存：<#77DD99>{stock} 个'
+      - '<#446688>──────────────────────'
+      - '<#8899AA>💡 优先从全服最低价订单开始匹配成交'
+
   'A':
     material: 'GOLD_NUGGET'
-    name: '<#88CCFF>购买 1 个'
+    name: '<#55FF99>🛒 <#77DD99>快捷购买 <#FFFFFF>×1'
+    lore:
+      - '<#446688>──────────────────────'
+      - '<#55AAFF>▸ <#AABBDD>采购数量：<#FFFFFF>1 个'
+      - '<#446688>──────────────────────'
+      - '<#FFCC66>▶ 点击获取购买报价'
+
   'B':
     material: 'GOLD_NUGGET'
-    name: '<#88CCFF>购买 16 个'
+    name: '<#55FF99>🛒 <#77DD99>快捷购买 <#FFFFFF>×16'
+    lore:
+      - '<#446688>──────────────────────'
+      - '<#55AAFF>▸ <#AABBDD>采购数量：<#FFFFFF>16 个 <#8899AA>(小半组)'
+      - '<#446688>──────────────────────'
+      - '<#FFCC66>▶ 点击获取购买报价'
+
   'C':
     material: 'GOLD_INGOT'
-    name: '<#88CCFF>购买 64 个'
+    name: '<#55FF99>🛒 <#77DD99>整组购买 <#FFFFFF>×64'
+    lore:
+      - '<#446688>──────────────────────'
+      - '<#55AAFF>▸ <#AABBDD>采购数量：<#FFFFFF>64 个 <#8899AA>(标准整组)'
+      - '<#446688>──────────────────────'
+      - '<#FFCC66>▶ 点击获取购买报价'
+
   'D':
     material: 'CHEST'
-    name: '<#88CCFF>购买全部现货'
+    name: '<#FFAA00>📦 <#FFCC66>扫货模式 <#8899AA>(购买全部现货)'
+    lore:
+      - '<#446688>──────────────────────'
+      - '<#55AAFF>▸ <#AABBDD>采购数量：<#FFFFFF>当前全部可购库存'
+      - '<#8899AA>✦ 自动跳过您自己挂牌的订单'
+      - '<#446688>──────────────────────'
+      - '<#FFCC66>▶ 点击获取全额报价'
+
   'Q':
     material: 'OAK_SIGN'
-    name: '<#88CCFF>输入数量'
+    name: '<#55AAFF>✎ <#88CCFF>自定义购买数量'
+    lore:
+      - '<#446688>──────────────────────'
+      - '<#55AAFF>▸ <#AABBDD>自由输入任意正整数采购量'
+      - '<#8899AA>✦ 自动按价格档位由低到高凑单'
+      - '<#446688>──────────────────────'
+      - '<#88CCFF>▶ 点击在聊天栏输入数量'
+
   'R':
     material: 'ARROW'
-    name: '<#88CCFF>返回'
+    name: '<#FF5555>↩ <#FF7777>返回上一页'
+    lore:
+      - '<#8899AA>点击返回商品浏览列表'
+
 row:
-  name: '<#88CCFF>{name}'
+  name: '<#55AAFF>▸ <#88CCFF>{name}'

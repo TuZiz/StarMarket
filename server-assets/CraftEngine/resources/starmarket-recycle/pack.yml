@@ -1,0 +1,6 @@
+schema-version: 1
+name: 'StarMarket 系统回收'
+author: 'TuZiz'
+version: '1.3.10'
+namespace: starmarket
+description: '176×126原生像素界面；连续外观数量条，分段点击选择'

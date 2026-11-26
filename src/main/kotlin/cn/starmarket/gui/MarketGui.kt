@@ -49,7 +49,6 @@ class MarketGui(val app:StarMarket):Listener {
    val size=assets.pageSize("browse");val selected=assets.layouts.getValue("browse").page(page,rows.size)
    val h=open(p,"browse",mapOf("page" to (selected+1).toString())){ch->when(ch){
     'S'->({sale.start(p)});'B'->({recycle.open(p)});'M'->({mine(p)});'H'->({history(p)});'F'->({prompt(p,"search-input"){home(p,it)}});'T'->({categories(p)});'P'->({home(p,search,category,selected-1)});'N'->({home(p,search,category,selected+1)});else->null}}
-   if(rows.isEmpty())app.message(p,"market-empty")
    rows.drop(selected*size).take(size).forEachIndexed{i,offer->content(h,i,assets.icon("browse","row",mapOf("name" to app.transactions.codec.label(offer.item),"price" to app.settings.money(offer.minimum),"stock" to offer.stock.toString()),offer.item)){detail(p,offer.item)}}
   }}
  }
@@ -57,7 +56,7 @@ class MarketGui(val app:StarMarket):Listener {
   app.db{it.offers(p.uniqueId.toString()).firstOrNull{it.item.key==item.key}}.whenComplete{offer,error->app.main{
    if(!current(p,id))return@main
    if(error!=null){app.transactions.failure(p,error);return@main}
-   if(offer==null){app.message(p,"market-empty");home(p);return@main}
+   if(offer==null){home(p);return@main}
    val h=open(p,"item",mapOf("name" to app.transactions.codec.label(item),"price" to app.settings.money(offer.minimum),"stock" to offer.stock.toString())){ch->when(ch){
     'A'->({app.transactions.quote(p,item,1)});'B'->({app.transactions.quote(p,item,16)});'C'->({app.transactions.quote(p,item,64)});'D'->({app.transactions.quote(p,item,offer.stock)});'Q'->({prompt(p,"quantity-input"){text->number(p,text){app.transactions.quote(p,item,it)}}});'R'->({home(p)});else->null}}
    preview(h,assets.icon("item","elements.I",mapOf("name" to app.transactions.codec.label(item),"price" to app.settings.money(offer.minimum),"stock" to offer.stock.toString()),item))

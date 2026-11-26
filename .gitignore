@@ -28,3 +28,13 @@ Thumbs.db
 !/tools/AutomaticDeliveryProbe.java
 !/tools/ListingRefreshProbe.java
 !/tools/HandListingProbe.java
+
+!/tools/CompatibilityProbe.java
+
+!/tools/RecyclingProbe.java
+!/tools/render_recycle_skin.py
+
+!/tools/recycle_preview_models.py
+!/tools/recycle_name_font.py
+
+__pycache__/

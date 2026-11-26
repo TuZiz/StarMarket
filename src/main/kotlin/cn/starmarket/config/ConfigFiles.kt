@@ -26,6 +26,7 @@ object ConfigFiles {
   val defaults=plugin.getResource("lang/zh_CN.yml")!!.bufferedReader().use{it.readText()}
   DeliveryLanguageMigration.upgrade(file,defaults)
   MarketLanguageMigration.upgrade(file,defaults)
+  RecycleMenuMigration.language(file,defaults)
   return load(file,setOf(3))
  }
 }

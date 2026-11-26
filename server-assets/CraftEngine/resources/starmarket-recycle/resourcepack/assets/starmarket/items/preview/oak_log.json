@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "starmarket:item/preview/oak_log_0"
+      },
+      {
+        "type": "minecraft:model",
+        "model": "starmarket:item/preview/render_bounds"
+      }
+    ]
+  },
+  "oversized_in_gui": true
+}

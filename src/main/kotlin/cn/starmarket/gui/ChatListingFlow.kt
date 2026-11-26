@@ -38,7 +38,10 @@ class ChatListingFlow(private val gui: MarketGui) {
             app.message(p, "listing-hand-summary", "name" to app.transactions.codec.label(item),
                 "quantity" to quantity.toString(), "price" to app.settings.money(price),
                 "gross" to app.settings.money(gross), "fee" to app.settings.money(fee))
-            app.transactions.listing.submit(p, item, quantity, price, false, slot, rate)
+            val token = gui.token(p)
+            app.transactions.listing.submit(p, item, quantity, price, false, slot, rate) {
+                if (app.gui === gui && gui.current(p, token)) gui.mine(p)
+            }
         } catch (error: MarketRejected) {
             app.transactions.failure(p, error)
             if (p.isOnline && p.hasPermission("starmarket.use")) prompt(p, false)

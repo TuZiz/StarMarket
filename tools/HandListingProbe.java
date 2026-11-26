@@ -23,7 +23,7 @@ public final class HandListingProbe {
  private final StarMarket app;private final JavaPlugin plugin;private final MarketGui gui;private final BiConsumer<Boolean,String> verify;
  private final UUID owner=UUID.randomUUID();private final Player player;private final Economy economy;
  private final ItemStack[] storage=new ItemStack[36];private final List<String> messages=new ArrayList<>();
- private Inventory opened;private int held=0,opens=0,withdrawals=0,deposits=0;private boolean online=true,reject=false;private long balance=100000;
+ private Inventory opened;private int held=0,opens=0,withdrawals=0,deposits=0;private boolean online=true,reject=false,switchOnTax=false;private long balance=100000;
  HandListingProbe(StarMarket app,JavaPlugin plugin,BiConsumer<Boolean,String> verify){
   this.app=app;this.plugin=plugin;this.gui=app.getGui();this.verify=verify;
   var inventory=(PlayerInventory)Proxy.newProxyInstance(getClass().getClassLoader(),new Class[]{PlayerInventory.class},(p,m,a)->switch(m.getName()){
@@ -40,7 +40,7 @@ public final class HandListingProbe {
    case "withdrawPlayer","depositPlayer"->{
     boolean own=a[0] instanceof OfflinePlayer account&&account.getUniqueId().equals(owner);boolean out=m.getName().equals("withdrawPlayer");
     long value=java.math.BigDecimal.valueOf((double)a[1]).movePointRight(2).longValueExact();
-    if(own){if(out)withdrawals++;else deposits++;if(!(out&&reject))balance+=out?-value:value;}
+    if(own){if(out&&switchOnTax){switchOnTax=false;gui.categories(player,0);}if(out)withdrawals++;else deposits++;if(!(out&&reject))balance+=out?-value:value;}
     yield new EconomyResponse((double)a[1],balance/100.0,out&&reject?EconomyResponse.ResponseType.FAILURE:EconomyResponse.ResponseType.SUCCESS,"test");
    }
    default->m.getReturnType()==boolean.class?false:m.getReturnType()==double.class?1000.0:m.getReturnType()==String.class?"":null;
@@ -81,12 +81,14 @@ public final class HandListingProbe {
     held=3;old[0]=callback();var first=send("2");var duplicate=send("2");
     verify.accept(first.isCancelled()&&duplicate.isCancelled(),"rapid duplicate price messages both suppressed from public chat");
    })).thenCompose(v->until(()->withdrawals==1&&!app.getTransactions().isBusy(player)))
+   .thenCompose(v->until(()->opened!=null&&screen().getMenu().equals("listings")))
    .thenCompose(v->app.db(ex->ex.orders(owner.toString(),null)))
    .thenCompose(orders->main(()->{
     verify.accept(orders.size()==1&&orders.getFirst().getRemaining()==64&&orders.getFirst().getMinimum()==200,"chat creates exactly one full-stack order at supplied unit price");
     verify.accept(orders.getFirst().getProduct().equals("oak_log")&&storage[3]==null&&storage[2].getAmount()==32,"item is chosen from main hand after GUI closes, other stack untouched");
     verify.accept(balance==99616&&withdrawals==1,"3 percent listing tax withdrawn once and no immediate sale income");
-    verify.accept(opened==null&&input()==null,"successful listing never opens sale confirmation GUI");
+    verify.accept(opened!=null&&screen().getMenu().equals("listings")&&input()==null,"successful listing opens existing own orders GUI");
+    verify.accept(screen().getActions().size()>1,"newly committed order rendered with management action");
     rejected(old[0],"consumed chat callback cannot replay listing");gui.getSale().start(player);
    })).thenCompose(v->invalid("not-a-price","售价无效"))
    .thenCompose(v->invalid("0.001","售价无效"))
@@ -113,7 +115,7 @@ public final class HandListingProbe {
    })).thenCompose(v->until(()->withdrawals==2&&!app.getTransactions().isBusy(player)))
    .thenCompose(v->app.db(ex->ex.getWarehouse().ready(owner.toString()).stream().mapToLong(c->c.getQuantity()).sum()))
    .thenCompose(quantity->main(()->{
-    verify.accept(quantity==8&&balance==99736,"explicit tax refusal preserves all items as reliable return receipt");
+    verify.accept(quantity==8&&balance==99736&&opened==null,"explicit tax refusal preserves all items and never opens orders GUI");
     reject=false;storage[2]=new ItemStack(Material.COBBLESTONE,7);gui.getSale().start(player);old[0]=callback();gui.clear();
     rejected(old[0],"reload cleanup rejects late chat callback");gui.getSale().start(player);online=false;send("2");
    })).thenCompose(v->until(()->input()==null))
@@ -124,13 +126,17 @@ public final class HandListingProbe {
    .thenCompose(v->main(()->{
     verify.accept(storage[2].getAmount()==7&&withdrawals==2,"unavailable economy rejects chat listing before item removal");
     app.getServer().getServicesManager().register(Economy.class,economy,plugin,ServicePriority.Highest);
-    storage[2]=new ItemStack(Material.DIRT,4);gui.getSale().start(player);send("99");
+    storage[2]=new ItemStack(Material.DIRT,4);gui.getSale().start(player);switchOnTax=true;send("99");
    })).thenCompose(v->until(()->withdrawals==3&&!app.getTransactions().isBusy(player)))
    .thenCompose(v->app.db(ex->ex.orders(owner.toString(),null)))
    .thenCompose(orders->main(()->{
     verify.accept(orders.stream().anyMatch(o->o.getProduct().equals("minecraft:dirt")&&o.getRemaining()==4&&o.getMinimum()==9900),"unconfigured item actually consigned at freely chosen price");
+    verify.accept(opened!=null&&screen().getMenu().equals("categories"),"success cannot replace a newer menu opened while transaction was pending");
     verify.accept(storage[2]==null&&balance==98548,"unconfigured item removed once and 3 percent tax paid");
     verify.accept(messages.stream().anyMatch(m->m.contains("3%")&&m.contains("不退")),"separate concise tax notice retained");
+    verify.accept(app.getCommand("market").tabComplete(player,"market",new String[]{"s"}).equals(List.of("search","sell")),"registered command completes subcommands instead of online player names");
+    verify.accept(app.getCommand("market").tabComplete(player,"market",new String[]{"cancel",""}).isEmpty(),"unavailable ID suggestions never fall back to player names");
+    verify.accept(app.getCommand("market").tabComplete(player,"market",new String[]{"admin","re"}).equals(List.of("reconcile","reload","reset","resume")),"registered command completes admin prefix correctly");
     int before=messages.size();app.onCommand(player,app.getCommand("market"),"market",new String[]{"help"});
     verify.accept(messages.subList(before,messages.size()).stream().anyMatch(m->m.contains("/market recycle")&&m.contains("回收")),"actual help command describes separate system recycling");
     verify.accept(messages.subList(before,messages.size()).stream().anyMatch(m->m.contains("/market sell")&&m.contains("单价")),"actual help command describes hand listing");

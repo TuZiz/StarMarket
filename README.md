@@ -1,4 +1,12 @@
-# StarMarket 1.3.5 · 星海玩家现货交易所
+# StarMarket 1.3.9 · 星海玩家现货交易所
+
+1.3.9：最低API声明改为26.2，使用实际Paper API `26.2.build.126-stable`（Adventure5.2.0）作为编译基线，Java25。61项单元测试通过；同一JAR在隔离Purpur26.2-2633和Leaf26.3-4各通过11项启动、物品数据、菜单加载、补全及SQLite寄售/购买/撤单检查。未执行真人客户端与生产经济插件完整验收。
+
+1.3.8：移除空市场自动聊天提示；空列表仍可正常打开。
+
+1.3.7：修复 `/market` 的Tab补全退回玩家名字。按权限补全玩家/管理员子命令、分类、管理商品ID和对账决策；未知命令及无补全的参数返回空列表，不查询数据库或玩家文件。订单ID、流水ID和UUID仍按帮助手动填写。
+
+1.3.6：聊天上架成功、订单及税费流水确认完成后自动打开现有“我的上架订单”，无需再次执行 `/market mine`。失败、断线、切换界面或重载后的迟到回调不强行打开旧菜单。系统回收不触发此跳转；保留原有菜单布局与中文文案。
 
 1.3.5：所有有效物品均可寄售，无需配置材质白名单。名称、附魔、耐久及自定义数据保留，不同数据分别展示；只有配置正数回收价且允许回收的标准物品可卖给系统。寄售单价大于零、符合金币最小单位，单价最高10亿金币（Vault现有安全边界），不再使用商品旧价格区间。未配置物品使用内置原版中文名，分类为“其他物品”。上架税规则不变。`/market help` 和 `/market admin help` 提供分类帮助；错误后仅显示简短重试提示。语言文件自动迁移到schema3并备份，保留未知字段和注释。
 
@@ -10,7 +18,7 @@
 
 1.3.4 验证：51 项 JUnit、隔离 Leaf26.3-4 上111项运行检查通过。聊天上架覆盖主手选择、整叠与单价、3%税额、重复消息/回调、空手/错误价格重试、cancel、断线、重载清理、经济服务缺失与明确扣税失败后的可靠返还；回收覆盖固定免税付款、特殊物品拒绝、旧确认失效且不新增寄售库存。测试使用实际聊天事件、库存、SQLite和临时Vault提供者，玩家连接为测试替身；生产服未重启、真人操作尚待确认。
 
-1.3.2 修复普通商品显示英文 ID：默认三种商品缺少 name 时，按材质使用随包配置中的中文名称；已有订单也按当前商品配置显示，历史库存数据无需重写。自定义物品优先保留 display_name 或 item_name。其他扩展物品请在 products/*.yml 中设置 name。
+1.3.2 修复普通商品显示英文 ID：默认三种商品缺少 name 时，按材质使用随包配置中的中文名称；已有订单也按当前商品配置显示，历史库存数据无需重写。自定义物品优先保留 display_name 或 item_name。所有原版物品使用内置中文名称，不再配置 name。
 
 1.3.1 修复“我的上架”撤单成功后残留旧按钮：点击后立即禁用该订单操作，完成后移除旧图标并刷新当前分页；最后一页删空时回到有效页。已撤回或售完的旧订单点击后同样刷新；关闭或切换菜单后，迟到结果不会抢回旧界面。
 
@@ -22,10 +30,10 @@
 
 ## 安装与升级
 
-当前依据实际服务端：Leaf 26.3-4，Minecraft 26.3，Java 25，Vault API 1.7.1。Purpur 和其他版本尚未独立运行验证，Folia不声明兼容。
+当前已验证：Purpur26.2-2633和Leaf26.3-4，Java25、Vault API1.7.1。Folia不声明兼容。
 
 1. 服务器安装 Vault 及现有 Vault Economy 提供者。无需 CraftEngine、Quest 或其他业务插件。
-2. 停服备份 `plugins/StarMarket`。仅保留一个 StarMarket JAR，替换为 `StarMarket-1.3.5.jar`，启动。
+2. 停服备份 `plugins/StarMarket`。仅保留一个 StarMarket JAR，替换为 `StarMarket-1.3.9.jar`，启动。
 3. 首次升级自动迁移配置与数据库。旧 `products.yml` 保留为原件，额外保存 `products.yml.pre-catalog.bak`；实际加载改为 `products/`。数据库 schema 1/2 升至 3 前通过 SQLite VACUUM 保存包含已提交 WAL 数据的备份。
 4. 原有订单按“旧最低价与旧市场参考价的较大值”固定为售价，数量、归属、待交付资产和异常流水保留。语言文件自动升至 schema 3，保留备份、未知字段和注释。旧仓库菜单不再加载；旧首页或订单页的仓库 C 按钮不再渲染。未知配置或数据库版本拒绝启动，不覆盖原文件。
 
@@ -95,44 +103,21 @@ StarMarket/
 
 旧版 `gui/main.yml` 等文件会保留但不再使用。语言文件按版本迁移旧提示并补充缺少的键，保留未知字段、未迁移的自定义文案与注释。旧 `config.yml` 中上限首次迁入 `trading.yml`，此后以新文件为准。
 
-`products/` 一个文件可以放一个或多个规则。所有文件必须有 `schema-version: 1`，商品ID和材质不能重复；同一材质只配置一次，其元数据变体自动分别分组。目录任意嵌套，不扫描其他扩展名。配置错误会指出文件、路径和值，不会静默跳过。
-
-普通资源示例：
+`products/` 递归读取多个 `.yml` / `.yaml`，每个文件可以配置多个物品。使用原版物品ID（小写），名称自动读取内置中文表；不需要配置 name、material 或市场参考参数。
 
 ```yaml
-schema-version: 1
+schema-version: 2
 products:
-  cobblestone:
-    name: '<#88CCFF>圆石'
-    material: 'COBBLESTONE'
-    category: '建筑材料'
-    reference-price: 1
-    min-price: 0.2
-    max-price: 5
-    recycle-price: 0.1
-    allow-metadata: false
+  cobblestone: 0.1
+  oak_log: 0.5
+  iron_ingot: 2
 ```
 
-装备/自定义物品载体示例（自行添加，不会默认生成库存）：
+数值为系统回收单价，0表示不回收；未配置物品也可寄售。系统回收仍只接受对应的标准物品，不接受改名、附魔或自定义数据变体。商品和材质不得重复。`schema-version` 可省略，此时按版本2读取。
 
-```yaml
-schema-version: 1
-products:
-  diamond_sword:
-    name: '<#88CCFF>钻石剑与自定义装备'
-    material: 'DIAMOND_SWORD'
-    category: '装备'
-    reference-price: 100
-    min-price: 1
-    max-price: 10000
-    recycle-price: 0
-    recycle-enabled: false
-    allow-metadata: true
-```
+旧版常规条目在有效校验后自动简化，并保存 `.pre-simple.bak`；保留注释和未知根字段。含未知字段或使用别名商品ID的旧条目继续兼容读取，避免丢失扩展配置或历史订单关联；不会强制改ID。迁移失败明确报错并保留原件。
 
-`allow-metadata` 保留兼容读取，但不再限制寄售。所有材质都可以携带完整数据交易，包括名称、Lore、附魔、耐久、属性、PDC及可序列化组件；不同完整数据不会合并。系统回收仍只接受配置的标准物品。`products/` 用于回收价、名称、分类及参考参数，不是寄售白名单；`min-price`/`max-price` 不再限制挂牌单价。已有商品ID关联历史订单，请勿直接删除或改材质。
-
-所有金额单位为Vault金币，必须是 `config.yml` 中 `money-unit` 的整数倍。数据库使用Long最小单位，换算使用BigDecimal；Vault边界依照提供者小数精度校验。单次外部支付额限制10亿金币，超出拒绝；不要在已有数据库上修改money-unit。参考价可选调节参数：`sensitivity` 默认0.3、`max-change` 默认0.05、`target-stock` 默认4096。它们只影响参考价。
+所有金额单位为Vault金币，必须是 `config.yml` 中 `money-unit` 的整数倍。数据库使用Long最小单位，换算使用BigDecimal；Vault边界依照提供者小数精度校验。单次外部支付额限制10亿金币，超出拒绝；不要在已有数据库上修改money-unit。简化配置不再提供动态参考价参数，不影响玩家自行定价。
 
 `trading.yml`：`listing-tax-rate` 为上架税率（0至小于1）；`order-limit` 为每玩家未售完订单数；`stock-limit` 为每玩家托管数量及单次请求上限；`listing-hours` 为有效小时数。上架税按整张订单总额计算并向上取整到最小单位，成交不重复计税。
 
@@ -163,9 +148,9 @@ SQLite由唯一数据库执行器串行持有，背包/GUI/Vault操作回到Leaf
 
 ### 从源码构建
 
-需要 Java 25 和 Maven。本版本使用已核实的 Leaf API `26.3.build.4-alpha`，不把 Minecraft 版本号当成 Paper/Bukkit API 版本号，也不声明其他服务端已验证。
+需要 Java 25 和 Maven。最低编译依赖为已核实的 Paper API `26.2.build.126-stable`，由Maven从PaperMC仓库解析；不再需要本地Leaf API JAR。
 
-1. 从匹配的 Leaf 服务端依赖目录取得 `leaf-api-26.3.build.4-alpha.jar`，放到 `libs/leaf-api.jar`；或在构建时用 `-Dleaf.api.jar=/absolute/path/to/leaf-api.jar` 指定绝对路径。
+1. 确认Java25及Maven可用。
 2. 准备 VaultAPI 1.7.1 编译依赖，放入本地 `libs/VaultAPI-1.7.1.jar`，然后安装到 Maven 本地仓库：
 
 ```shell
@@ -173,10 +158,10 @@ mvn install:install-file -Dfile=libs/VaultAPI-1.7.1.jar -DgroupId=com.github.Mil
 mvn clean package
 ```
 
-输出 `target/v1.3.5/StarMarket-1.3.5.jar`；`mvn test` 运行单元测试。`libs/` 中的第三方 JAR 需自行准备，未上传仓库。
+输出 `target/v1.3.9/StarMarket-1.3.9.jar`；`mvn test` 运行单元测试。`libs/` 中的第三方 JAR 需自行准备，未上传仓库。
 
-运行库仅 Kotlin、SQLite 等必要依赖；Leaf API 和 VaultAPI 不进入生产 JAR，服务端仍需安装 Vault 及正式经济提供者。
+运行库仅 Kotlin、SQLite 等必要依赖；Paper API 和 VaultAPI 不进入生产 JAR，服务端仍需安装 Vault 及正式经济提供者。
 
 底层回归包含真实背包填充与脚下实体掉落、部分溢出、离线保留与上线补发、预留后断线、离线金币到账、明确拒付与未知结果冻结、重复派发、发货后异常、掉落被取消、RPG名称/附魔/PDC和非堆叠物品分批；本版检查数量与新增范围见文首。测试辅助代码位于 `tools/RuntimeProbe.java`、`tools/HandListingProbe.java`、`tools/ListingRefreshProbe.java` 和 `tools/AutomaticDeliveryProbe.java`，不进入生产JAR。
 
-尚未执行真实玩家客户端完整点击验收、生产经济提供者端到端扣款和故障注入、Purpur独立运行验证。隔离测试使用临时Vault测试提供者，未修改正式经济余额。
+尚未执行真实玩家客户端完整点击验收、生产经济提供者端到端扣款和故障注入。隔离测试使用临时Vault测试提供者，未修改正式经济余额。

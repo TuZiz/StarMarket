@@ -1,0 +1,86 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "\udbaa\udd80": 1,
+        "\udbaa\udd81": 2,
+        "\udbaa\udd82": 4,
+        "\udbaa\udd83": 8,
+        "\udbaa\udd84": 16,
+        "\udbaa\udd85": 32,
+        "\udbaa\udd86": 64,
+        "\udbaa\udd87": 128,
+        "\udbaa\udd88": 256,
+        "\udbaa\udd89": 512,
+        "\udbaa\udd90": -1,
+        "\udbaa\udd91": -2,
+        "\udbaa\udd92": -4,
+        "\udbaa\udd93": -8,
+        "\udbaa\udd94": -16,
+        "\udbaa\udd95": -32,
+        "\udbaa\udd96": -64,
+        "\udbaa\udd97": -128,
+        "\udbaa\udd98": -256,
+        "\udbaa\udd99": -512,
+        "\udbaa\udda0": 0.5,
+        "\udbaa\udda1": -0.5,
+        "\udbaa\udf03": 4
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "starmarket:font/recycle.png",
+      "height": 126,
+      "ascent": 13,
+      "chars": [
+        "\udbaa\udd00"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "starmarket:font/price_line.png",
+      "height": 8,
+      "ascent": -28,
+      "chars": [
+        "\udbaa\udf00\udbaa\udf01\udbaa\udf02\udbaa\udf03\udbaa\udf04\udbaa\udf05\udbaa\udf06\udbaa\udf07\udbaa\udf08\udbaa\udf09\udbaa\udf0a\udbaa\udf0b\udbaa\udf0c\udbaa\udf0d\udbaa\udf0e\udbaa\udf0f\udbaa\udf10"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "starmarket:font/item_names.png",
+      "height": 10,
+      "ascent": -12,
+      "chars": [
+        "\udbaa\ude00\udbaa\ude01\udbaa\ude02\udbaa\ude03\udbaa\ude04\udbaa\ude05\udbaa\ude06\udbaa\ude07\udbaa\ude08\udbaa\ude09\udbaa\ude0a\udbaa\ude0b"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "starmarket:font/numbers.png",
+      "height": 7,
+      "ascent": -53,
+      "chars": [
+        "\udbaa\udd10\udbaa\udd11\udbaa\udd12\udbaa\udd13\udbaa\udd14\udbaa\udd15\udbaa\udd16\udbaa\udd17\udbaa\udd18\udbaa\udd19\udbaa\udd1a\udbaa\udd1b\udbaa\udd1c"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "starmarket:font/numbers.png",
+      "height": 7,
+      "ascent": -24,
+      "chars": [
+        "\udbaa\udd30\udbaa\udd31\udbaa\udd32\udbaa\udd33\udbaa\udd34\udbaa\udd35\udbaa\udd36\udbaa\udd37\udbaa\udd38\udbaa\udd39\udbaa\udd3a\udbaa\udd3b\udbaa\udd3c"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "starmarket:font/numbers.png",
+      "height": 7,
+      "ascent": -81,
+      "chars": [
+        "\udbaa\udd50\udbaa\udd51\udbaa\udd52\udbaa\udd53\udbaa\udd54\udbaa\udd55\udbaa\udd56\udbaa\udd57\udbaa\udd58\udbaa\udd59\udbaa\udd5a\udbaa\udd5b\udbaa\udd5c"
+      ]
+    }
+  ]
+}

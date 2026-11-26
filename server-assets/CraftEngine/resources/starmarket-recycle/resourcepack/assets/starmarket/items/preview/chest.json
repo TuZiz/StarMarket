@@ -1,0 +1,42 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:select",
+        "cases": [
+          {
+            "model": {
+              "type": "minecraft:special",
+              "base": "starmarket:item/preview/chest_0",
+              "model": {
+                "type": "minecraft:chest",
+                "texture": "minecraft:christmas"
+              }
+            },
+            "when": [
+              "12-24",
+              "12-25",
+              "12-26"
+            ]
+          }
+        ],
+        "fallback": {
+          "type": "minecraft:special",
+          "base": "starmarket:item/preview/chest_0",
+          "model": {
+            "type": "minecraft:chest",
+            "texture": "minecraft:normal"
+          }
+        },
+        "pattern": "MM-dd",
+        "property": "minecraft:local_time"
+      },
+      {
+        "type": "minecraft:model",
+        "model": "starmarket:item/preview/render_bounds"
+      }
+    ]
+  },
+  "oversized_in_gui": true
+}

@@ -5,9 +5,11 @@ import java.math.BigDecimal
 
 class ListingTransactions(private val tx:Transactions) {
  private val app get()=tx.app
- fun submit(p:Player,item:ItemIdentity,n:Long,price:Long,recycle:Boolean,slot:Int,shownRate:BigDecimal=app.settings.listingTaxRate)=tx.run(p,if(recycle)"recycled" else "listed-taxed"){
+ fun submit(p:Player,item:ItemIdentity,n:Long,price:Long,recycle:Boolean,slot:Int,shownRate:BigDecimal=app.settings.listingTaxRate,onListed:()->Unit = {}) = execute(p,item,n,price,recycle,slot,shownRate,null,onListed)
+ fun recycle(p:Player,item:ItemIdentity,n:Long,selection:RecyclingSelection) = execute(p,item,n,0,true,-1,app.settings.listingTaxRate,selection,{})
+ private fun execute(p:Player,item:ItemIdentity,n:Long,price:Long,recycle:Boolean,slot:Int,shownRate:BigDecimal,selection:RecyclingSelection?,onListed:()->Unit)=tx.run(p,if(recycle)"recycled" else "listed-taxed",onSuccess={if(!recycle)onListed()}){
   tx.active(p);val product=app.settings.products.getValue(item.product)
-  tx.codec.checkSlot(p,item,n,slot)
+  if(selection==null)tx.codec.checkSlot(p,item,n,slot)else selection.check(p,n)
   if(recycle&&!tx.codec.recyclable(item))throw MarketRejected("recycle")
   if(!recycle&&shownRate!=app.settings.listingTaxRate)throw MarketRejected("changed")
   val amount=if(recycle)Math.multiplyExact(n,product.salvage)else Pricing.listingTax(Math.multiplyExact(n,price),shownRate)
@@ -19,7 +21,7 @@ class ListingTransactions(private val tx:Transactions) {
    else {if(ex.listingTaxRate!=shownRate)throw MarketRejected("changed");ex.deposit(p.uniqueId.toString(),product,n,price,item)}
   }.thenCompose{id->
    var removed=false
-   val effect=app.main{tx.active(p);tx.codec.removeSlot(p,item,n,slot);removed=true}.thenCompose{
+   val effect=app.main{tx.active(p);if(selection==null)tx.codec.removeSlot(p,item,n,slot)else selection.remove(p,n);removed=true}.thenCompose{
     if(!recycle)app.db{it.taxes.removed(id);it.taxes.begin(id)}.thenCompose{tax->app.main{tx.active(p);tax==0L||app.vault.transfer(p.uniqueId,tax,true)}}.thenCompose{paid->app.db{
      if(paid)it.taxes.paid(id)else {it.taxes.reject(id,true);throw MarketRejected("listing-tax")}
     }}

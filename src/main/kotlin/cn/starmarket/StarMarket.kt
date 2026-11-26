@@ -58,6 +58,12 @@ class StarMarket:JavaPlugin(),MarketAccess {
   texts.forEach{text->var result=text;values.forEach{(k,v)->result=result.replace("{$k}",net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().escapeTags(v))};sender.sendMessage(Text.render(result))}
  }
  override fun openMarket(player:Player){if(!ready)message(player,"busy")else if(!player.hasPermission("starmarket.use"))message(player,"permission")else gui.home(player)}
+ /** Leaf command dispatch thread: only immutable command/config data, no blocking IO. */
+ override fun onTabComplete(sender:CommandSender,command:Command,alias:String,args:Array<out String>):List<String> {
+  if(!ready)return emptyList()
+  return MarketCompletions.suggest(args.toList(),sender is Player,sender.hasPermission("starmarket.use"),sender.hasPermission("starmarket.admin"),
+   {settings.products.values.map{it.category}}, {settings.products.keys})
+ }
  override fun onCommand(sender:CommandSender,command:Command,label:String,args:Array<out String>):Boolean {
   if(!ready){message(sender,"busy");return true}
   if(args.firstOrNull()=="admin"){admin.execute(sender,args.drop(1));return true}

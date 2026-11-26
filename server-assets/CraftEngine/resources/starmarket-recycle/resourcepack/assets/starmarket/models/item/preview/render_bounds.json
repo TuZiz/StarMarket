@@ -1,0 +1,39 @@
+{
+  "textures": {
+    "blank": "starmarket:item/gui_blank"
+  },
+  "display": {
+    "gui": {
+      "translation": [
+        0,
+        8,
+        0
+      ]
+    }
+  },
+  "elements": [
+    {
+      "from": [
+        -2,
+        -2,
+        8
+      ],
+      "to": [
+        18,
+        18,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#blank",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

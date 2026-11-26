@@ -1,7 +1,7 @@
 name: 'StarMarket'
-version: '1.3.5'
+version: '1.3.17'
 main: 'cn.starmarket.StarMarket'
-api-version: '26.3'
+api-version: '26.2'
 depend:
   - Vault
 commands:

@@ -12,7 +12,7 @@ class MarketLanguageMigrationTest {
         val old = "# 中文备注\nschema-version: 2 # 版本\nreject-unsupported: '旧提示' # 保留注释\npermission: '自定义权限提示'\ncustom:\n  nested: '未知字段'\n"
         val next = MarketLanguageMigration.transform(old, defaults)
         assertTrue(next.contains("schema-version: 3 # 版本"))
-        assertTrue(next.contains("重新选择。' # 保留注释"))
+        assertTrue(next.contains(defaults.lines().first { it.startsWith("reject-unsupported:") } + " # 保留注释"))
         assertTrue(next.contains("permission: '自定义权限提示'"))
         assertTrue(next.contains("nested: '未知字段'"))
         assertTrue(next.contains("help-player:\n  - '"))

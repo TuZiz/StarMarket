@@ -1,37 +1,8 @@
-schema-version: 1
-# 可按主题拆分多个文件；products/ 内递归加载 .yml 与 .yaml。
-# 所有有效物品均可寄售，不需要在这里添加白名单。
-# 此处仅配置系统回收价、商品名称、分类及市场参考参数；同一材质一个规则。
-# 未配置物品使用原版中文名，归入“其他物品”，不提供系统回收。
-# min-price/max-price 为旧版参考参数；寄售价格不再按商品区间限制。
-# allow-metadata 为旧版兼容字段；所有物品都按完整数据寄售。
-# 系统回收仅接受 recycle-enabled 未关闭且回收价大于零的标准物品。
-# 价格单位为 Vault 金币，须符合 config.yml 最小单位。
+schema-version: 2
+# 物品ID: 系统回收单价（Vault金币），须为money-unit的整数倍。
+# 名称自动使用内置中文；0表示不回收。所有真实物品仍可由玩家上架。
+# 可在products/中拆分多个yml；同一物品只配置一次。
 products:
-  cobblestone:
-    name: '<#88CCFF>圆石'
-    material: 'COBBLESTONE'
-    category: '建筑材料'
-    reference-price: 1
-    min-price: 0.2
-    max-price: 5
-    recycle-price: 0.1
-    allow-metadata: false
-  oak_log:
-    name: '<#88CCFF>橡木原木'
-    material: 'OAK_LOG'
-    category: '建筑材料'
-    reference-price: 4
-    min-price: 1
-    max-price: 20
-    recycle-price: 0.5
-    allow-metadata: false
-  iron_ingot:
-    name: '<#88CCFF>铁锭'
-    material: 'IRON_INGOT'
-    category: '矿物材料'
-    reference-price: 10
-    min-price: 3
-    max-price: 50
-    recycle-price: 2
-    allow-metadata: false
+  cobblestone: 0.1
+  oak_log: 0.5
+  iron_ingot: 2

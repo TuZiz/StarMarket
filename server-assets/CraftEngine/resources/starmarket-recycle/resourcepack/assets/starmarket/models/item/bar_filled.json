@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "starmarket:item/bar_filled"
+  },
+  "display": {
+    "gui": {
+      "scale": [
+        1.125,
+        1,
+        1
+      ]
+    }
+  }
+}

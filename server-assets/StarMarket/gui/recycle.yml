@@ -1,0 +1,116 @@
+# 数量条为七段比例选择；默认全部。点击条上不同位置调整比例。
+schema-version: 2
+pixel-title: true
+# 与CE item_names.png字形顺序一致；变更名称字符时同步更新资源包。
+pixel-name-characters: '?选择物品圆石橡木原铁锭'
+pixel-empty-name: '选择物品'
+pixel-price-format: '单价 {price} 金币'
+pixel-price-characters: '?单价 金币0123456789.'
+title: '<#FFFFFF>󺦓󺤀󺦐󺦔󺦕󺦗<#30372F>{pixel-name}<#245329>{pixel-quantity}<#655F51>{pixel-price-prefix}<#76551B>{pixel-price}<#655F51>{pixel-price-suffix}<#B18A32>{pixel-total}'
+summary: '<#E8D5B5>{name} <#AAB7B2>· <#E7F0E9>{quantity}/{available} 个 <#AAB7B2>· 预计 <#E1C38A>{total} 金币 <#9BCBAA>免税'
+shape:
+  - '#########'
+  - '#I    E #'
+  - '#########'
+  - '#1234567#'
+  - '#########'
+  - 'RRRR SSSS'
+elements:
+  '#':
+    item-model: 'starmarket:gui_blank'
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  'I':
+    item-models:
+      COBBLESTONE: 'starmarket:preview/cobblestone'
+      OAK_LOG: 'starmarket:preview/oak_log'
+      IRON_INGOT: 'starmarket:preview/iron_ingot'
+    material: 'PAPER'
+    name: '<#E8D5B5>{name}'
+    lore:
+      - '<#AAB7B2>出售数量 <#E7F0E9>{quantity} / {available} 个'
+      - '<#AAB7B2>固定单价 <#E1C38A>{price} 金币'
+      - ''
+      - '<#AAB7B2>点击背包切换物品，默认选择全部'
+  'E':
+    item-model: 'starmarket:gui_blank'
+    material: 'GOLD_INGOT'
+    name: '<#E1C38A>预计获得 {total} 金币'
+    lore:
+      - '<#AAB7B2>已选 <#E7F0E9>{quantity} <#AAB7B2>个 · {percent}%'
+      - '<#9BCBAA>系统回收免税'
+  'R':
+    item-model: 'starmarket:gui_blank'
+    material: 'ARROW'
+    name: '<#DDB6A4>返回市场'
+  'S':
+    item-model: 'starmarket:gui_blank'
+    material: 'EMERALD'
+    name: '<#9BCBAA>确认回收 · {total} 金币'
+    lore:
+      - '<#AAB7B2>{name} <#E7F0E9>×{quantity}'
+      - '<#AAB7B2>固定单价 <#E1C38A>{price} 金币 <#AAB7B2>· 免税'
+      - ''
+      - '<#DDB6A4>确认后永久销毁所选数量的物品'
+      - '<#AAB7B2>回收物品不会进入玩家市场'
+      - ''
+      - '<#9BCBAA>点击立即回收'
+  '1':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '2':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '3':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '4':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '5':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '6':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '7':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+empty:
+  item-model: 'starmarket:preview/chest'
+  material: 'CHEST'
+  name: '<#E1C38A>点击背包选择回收物品'
+  lore:
+    - '<#AAB7B2>默认选择背包内同种物品的全部数量'
+    - '<#AAB7B2>点击数量条选择出售比例'
+    - ''
+    - '<#AAB7B2>仅支持有系统回收价的标准物品'
+    - '<#AAB7B2>预览阶段不会扣除物品'
+bar-filled:
+  item-model: 'starmarket:bar_filled'
+  material: 'LIME_STAINED_GLASS_PANE'
+  name: '<#9BCBAA>选择 {target} 个 · {target-percent}%'
+  lore:
+    - '<#AAB7B2>当前 <#E7F0E9>{quantity} / {available} 个'
+    - '<#AAB7B2>预计收益 <#E1C38A>{total} 金币'
+    - ''
+    - '<#9BCBAA>点击调整至此数量'
+bar-empty:
+  item-model: 'starmarket:bar_empty'
+  material: 'GRAY_STAINED_GLASS_PANE'
+  name: '<#D2D9D4>选择 {target} 个 · {target-percent}%'
+  lore:
+    - '<#AAB7B2>当前 <#E7F0E9>{quantity} / {available} 个'
+    - '<#AAB7B2>预计收益 <#E1C38A>{total} 金币'
+    - ''
+    - '<#9BCBAA>点击调整至此数量'
+
+bar-handle:
+  item-model: 'starmarket:bar_handle'
+  material: 'LIME_STAINED_GLASS_PANE'
+  name: '<#9BCBAA>选择 {target} 个 · {target-percent}%'
+  lore:
+    - '<#AAB7B2>当前 <#E7F0E9>{quantity} / {available} 个'
+    - '<#AAB7B2>预计收益 <#E1C38A>{total} 金币'
+    - ''
+    - '<#9BCBAA>点击调整至此数量'

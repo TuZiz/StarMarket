@@ -36,7 +36,7 @@ object MarketLanguageMigration {
             if (key !in keys) text = text.trimEnd() + "\n" + block + "\n"
             else if (key in replaced || key == "schema-version") {
                 val pattern = Regex("(?m)^${Regex.escape(key)}:[^\n]*")
-                text = text.replace(pattern) { block + DeliveryLanguageMigration.comment(it.value) }
+                text = text.replace(pattern) { block.substringBefore("\n") + DeliveryLanguageMigration.comment(it.value) }
             }
         }
         return text.replace("\n", newline)

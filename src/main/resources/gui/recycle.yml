@@ -1,33 +1,98 @@
-schema-version: 1
-title: '<#55AAFF>✦ <#FFCC66>系统回收 <#667788>· <#AABBDD>点击背包选物'
+# 数量条为七段比例选择；默认全部。点击条上不同位置调整比例。
+schema-version: 2
+title: '<#CDA56F>系统回收 <#7C8A85>· 免税'
+summary: '<#E8D5B5>{name} <#AAB7B2>· <#E7F0E9>{quantity}/{available} 个 <#AAB7B2>· 预计 <#E1C38A>{total} 金币 <#9BCBAA>免税'
 shape:
-  - '####I####'
-  - '#   S   #'
-  - '####R####'
+  - '#########'
+  - '#I    E #'
+  - '#########'
+  - '#1234567#'
+  - '#########'
+  - 'RRRR SSSS'
 elements:
   '#':
-    material: 'BLACK_STAINED_GLASS_PANE'
+    material: 'GRAY_STAINED_GLASS_PANE'
     name: ''
   'I':
     material: 'PAPER'
-    name: '<#88CCFF>{name} ×{quantity}'
+    name: '<#E8D5B5>{name}'
     lore:
-      - '<#AABBDD>固定单价：{price} 金币'
-      - '<#77DD99>整叠回收：{total} 金币'
-  'S':
+      - '<#AAB7B2>出售数量 <#E7F0E9>{quantity} / {available} 个'
+      - '<#AAB7B2>固定单价 <#E1C38A>{price} 金币'
+      - ''
+      - '<#AAB7B2>点击背包切换物品，默认选择全部'
+  'E':
     material: 'GOLD_INGOT'
-    name: '<#FFCC66>确认系统回收（免税）'
+    name: '<#E1C38A>预计获得 {total} 金币'
     lore:
-      - '<#AABBDD>{name} ×{quantity}'
-      - '<#77DD99>立即获得 {total} 金币，不扣税'
-      - '<#FF7777>确认后永久消耗该格整叠物品'
-      - '<#AABBDD>系统回收物品不会进入玩家市场'
+      - '<#AAB7B2>已选 <#E7F0E9>{quantity} <#AAB7B2>个 · {percent}%'
+      - '<#9BCBAA>系统回收免税'
   'R':
-    material: 'REDSTONE'
-    name: '<#FF7777>返回市场'
+    material: 'ARROW'
+    name: '<#DDB6A4>返回市场'
+  'S':
+    material: 'EMERALD'
+    name: '<#9BCBAA>确认回收 · {total} 金币'
+    lore:
+      - '<#AAB7B2>{name} <#E7F0E9>×{quantity}'
+      - '<#AAB7B2>固定单价 <#E1C38A>{price} 金币 <#AAB7B2>· 免税'
+      - ''
+      - '<#DDB6A4>确认后永久销毁所选数量的物品'
+      - '<#AAB7B2>回收物品不会进入玩家市场'
+      - ''
+      - '<#9BCBAA>点击立即回收'
+  '1':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '2':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '3':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '4':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '5':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '6':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
+  '7':
+    material: 'GRAY_STAINED_GLASS_PANE'
+    name: ''
 empty:
   material: 'CHEST'
-  name: '<#FFCC66>点击下方背包选择回收物品'
+  name: '<#E1C38A>点击背包选择回收物品'
   lore:
-    - '<#AABBDD>默认回收所选格子的整叠数量'
-    - '<#AABBDD>确认之前不会扣除物品'
+    - '<#AAB7B2>默认选择背包内同种物品的全部数量'
+    - '<#AAB7B2>点击数量条选择出售比例'
+    - ''
+    - '<#AAB7B2>仅支持有系统回收价的标准物品'
+    - '<#AAB7B2>预览阶段不会扣除物品'
+bar-filled:
+  material: 'LIME_STAINED_GLASS_PANE'
+  name: '<#9BCBAA>选择 {target} 个 · {target-percent}%'
+  lore:
+    - '<#AAB7B2>当前 <#E7F0E9>{quantity} / {available} 个'
+    - '<#AAB7B2>预计收益 <#E1C38A>{total} 金币'
+    - ''
+    - '<#9BCBAA>点击调整至此数量'
+bar-empty:
+  material: 'GRAY_STAINED_GLASS_PANE'
+  name: '<#D2D9D4>选择 {target} 个 · {target-percent}%'
+  lore:
+    - '<#AAB7B2>当前 <#E7F0E9>{quantity} / {available} 个'
+    - '<#AAB7B2>预计收益 <#E1C38A>{total} 金币'
+    - ''
+    - '<#9BCBAA>点击调整至此数量'
+
+bar-handle:
+  material: 'LIME_STAINED_GLASS_PANE'
+  name: '<#9BCBAA>选择 {target} 个 · {target-percent}%'
+  lore:
+    - '<#AAB7B2>当前 <#E7F0E9>{quantity} / {available} 个'
+    - '<#AAB7B2>预计收益 <#E1C38A>{total} 金币'
+    - ''
+    - '<#9BCBAA>点击调整至此数量'

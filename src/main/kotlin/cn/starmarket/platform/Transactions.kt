@@ -24,9 +24,9 @@ class Transactions(val app:StarMarket) {
    else->{app.logger.log(java.util.logging.Level.SEVERE,"Transaction player=${p.uniqueId}",cause);app.message(p,"transaction-uncertain")}
   }
  }
- fun run(p:Player,success:String?="success",work:()->CompletableFuture<*>){
+ fun run(p:Player,success:String?="success",onSuccess:()->Unit = {},work:()->CompletableFuture<*>){
   if(!busy.add(p.uniqueId)){app.message(p,"busy");return}
-  try{active(p);work().whenComplete{_,e->app.main{busy.remove(p.uniqueId);app.deliveries.wake(p.uniqueId);if(p.isOnline){if(e!=null)failure(p,e)else if(success!=null)app.message(p,success)}}}}
+  try{active(p);work().whenComplete{_,e->app.main{busy.remove(p.uniqueId);app.deliveries.wake(p.uniqueId);if(p.isOnline){if(e!=null)failure(p,e)else {if(success!=null)app.message(p,success);onSuccess()}}}}}
   catch(e:Throwable){busy.remove(p.uniqueId);failure(p,e)}
  }
  fun <T> recover(future:CompletableFuture<T>,repair:(Throwable)->CompletableFuture<*>):CompletableFuture<T> = future.handle{value,error->

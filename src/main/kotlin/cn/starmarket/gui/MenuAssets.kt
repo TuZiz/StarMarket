@@ -2,6 +2,7 @@ package cn.starmarket.gui
 import cn.starmarket.StarMarket
 import cn.starmarket.config.ConfigFiles
 import cn.starmarket.config.BrowseMenuMigration
+import cn.starmarket.config.RecycleMenuMigration
 import cn.starmarket.domain.ItemIdentity
 import cn.starmarket.platform.Text
 import org.bukkit.Material
@@ -10,7 +11,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 
 class MenuAssets(private val app:StarMarket) {
  private val names=listOf("browse","item","recycle","purchase","listings","records","categories")
- val configs=names.associateWith{name->(if(name=="browse")BrowseMenuMigration.load(app)else ConfigFiles.defaults(app,"gui/$name.yml")).also{c->
+ val configs=names.associateWith{name->(when(name){"browse"->BrowseMenuMigration.load(app);"recycle"->RecycleMenuMigration.load(app);else->ConfigFiles.defaults(app,"gui/$name.yml")}).also{c->
   if(name in listOf("browse","listings")){
    c.set("shape",c.getStringList("shape").map{it.replace('C','#')});c.set("elements.C",null)
   }
@@ -23,6 +24,9 @@ class MenuAssets(private val app:StarMarket) {
   val c=configs.getValue(menu)
   val stack=if(item==null)ItemStack(Material.valueOf(c.getString("$path.material","PAPER")!!))else app.transactions.codec.decode(item)
   val meta=stack.itemMeta
+  c.getString("$path.item-models.${stack.type.name}", c.getString("$path.item-model"))?.let { model ->
+   meta.setItemModel(requireNotNull(org.bukkit.NamespacedKey.fromString(model)){"gui/$menu.yml $path.item-model invalid: $model"})
+  }
   val existing=meta.lore().orEmpty().map{Text.plain(it)}
   val name=c.getString("$path.name")
   if(name!=null)meta.displayName(Text.render(format(name,values)))else meta.displayName()?.let{meta.displayName(Text.plain(it))}
